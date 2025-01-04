@@ -2,8 +2,8 @@ public class DeluxeRoom extends Room {
     private double balconySize;
     private String view;
 
-    public DeluxeRoom(int roomNumber, int floor, String occupancy, double pricePerNight, double balconySize, String view) {
-        super(roomNumber, floor, occupancy, pricePerNight);
+    public DeluxeRoom(int roomNumber, int floor, String occupancyRate, double pricePerNight, double balconySize, String view) {
+        super(roomNumber, floor, occupancyRate, pricePerNight);
         this.balconySize = balconySize;
         this.view = view;
     }

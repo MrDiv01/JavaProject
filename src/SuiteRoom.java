@@ -3,8 +3,8 @@ public class SuiteRoom extends Room {
     private int numberOfBathrooms;
     private boolean hasKitchenette;
 
-    public SuiteRoom(int roomNumber, int floor, String occupancy, double pricePerNight, double livingArea, int numberOfBathrooms, boolean hasKitchenette) {
-        super(roomNumber, floor, occupancy, pricePerNight);
+    public SuiteRoom(int roomNumber, int floor, String occupancyRate, double pricePerNight, double livingArea, int numberOfBathrooms, boolean hasKitchenette) {
+        super(roomNumber, floor, occupancyRate, pricePerNight);
         this.livingArea = livingArea;
         this.numberOfBathrooms = numberOfBathrooms;
         this.hasKitchenette = hasKitchenette;
