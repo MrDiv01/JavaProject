@@ -1,13 +1,13 @@
 public abstract class Room {
     private int roomNumber;
     private int floor;
-    private String occupancy;
+    private String occupancyRate;
     private double pricePerNight;
 
-    public Room(int roomNumber, int floor, String occupancy, double pricePerNight) {
+    public Room(int roomNumber, int floor, String occupancyRate, double pricePerNight) {
         this.roomNumber = roomNumber;
         this.floor = floor;
-        this.occupancy = occupancy;
+        this.occupancyRate = occupancyRate;
         this.pricePerNight = pricePerNight;
     }
 
@@ -19,8 +19,8 @@ public abstract class Room {
         return floor;
     }
 
-    public String getOccupancy() {
-        return occupancy;
+    public String getoccupancyRate() {
+        return occupancyRate;
     }
 
     public double getPricePerNight() {

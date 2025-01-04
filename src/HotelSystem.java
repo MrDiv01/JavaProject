@@ -1,76 +1,96 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HotelSystem {
-    private List<Room> rooms = new ArrayList<>();
-    private List<Booking> bookings = new ArrayList<>();
+    private final List<Room> rooms = new ArrayList<>();
+    private final List<Booking> bookings = new ArrayList<>();
 
-    // Oda ekleme
     public void addRoom(Room room) {
         rooms.add(room);
     }
 
-    // Odaları listeleme
     public void listRooms() {
         if (rooms.isEmpty()) {
             System.out.println("No rooms available.");
-            return;
-        }
-        for (Room room : rooms) {
-            System.out.println(room.getRoomDetails());
+        } else {
+            rooms.forEach(room -> System.out.println(room.getRoomDetails()));
         }
     }
 
-    // Oda müsaitlik kontrolü
-    public boolean isRoomAvailable(Room room, String checkInDate, String checkOutDate) {
-        for (Booking booking : bookings) {
-            if (booking.getRoom().equals(room) && booking.overlaps(new Booking("", "", checkInDate, checkOutDate, room))) {
-                return false;
-            }
+    public boolean isRoomAvailable(Room room, String checkEntryDate, String checkTheReleaseDate) {
+        return bookings.stream()
+                .noneMatch(booking -> booking.getRoom().equals(room) &&
+                        booking.overlaps(new Booking("", "", checkEntryDate, checkTheReleaseDate, room)));
+    }
+
+    public Booking bookRoom(String customerName, String contactDetails, String checkEntryDate, String checkTheReleaseDate, int roomNumber) {
+        // Validate dates
+        LocalDate entryDate;
+        LocalDate releaseDate;
+
+        try {
+            entryDate = LocalDate.parse(checkEntryDate);
+            releaseDate = LocalDate.parse(checkTheReleaseDate);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format! Please use yyyy-MM-dd.");
+            return null;
         }
+
+        if (releaseDate.isBefore(entryDate)) {
+            System.out.println("Release date cannot be before entry date.");
+            return null;
+        }
+
+        Room room = findRoomByNumber(roomNumber);
+        if (room == null) {
+            System.out.println("Room number not found.");
+            return null;
+        }
+
+        if (!isRoomAvailable(room, checkEntryDate, checkTheReleaseDate)) {
+            System.out.println("Room is not available for the selected dates.");
+            return null;
+        }
+
+        Booking newBooking = new Booking(customerName, contactDetails, checkEntryDate, checkTheReleaseDate, room);
+        bookings.add(newBooking);
+        System.out.println("Booking successful! Booking ID: " + newBooking.getBookingId());
+        return newBooking;
+    }
+
+    public boolean cancelBooking(int bookingId) {
+        Booking bookingToCancel = findBookingById(bookingId);
+        if (bookingToCancel == null) {
+            System.out.println("Booking ID not found.");
+            return false;
+        }
+
+        bookings.remove(bookingToCancel);
+        System.out.println("Booking canceled successfully!");
         return true;
     }
 
-    // Oda kiralama
-    public Booking bookRoom(String customerName, String contactDetails, String checkInDate, String checkOutDate, int roomNumber) {
-        for (Room room : rooms) {
-            if (room.getRoomNumber() == roomNumber) {
-                if (isRoomAvailable(room, checkInDate, checkOutDate)) {
-                    Booking newBooking = new Booking(customerName, contactDetails, checkInDate, checkOutDate, room);
-                    bookings.add(newBooking);
-                    System.out.println("Booking successful! Booking ID: " + newBooking.getBookingId());
-                    return newBooking;
-                } else {
-                    System.out.println("Room is not available for the selected dates.");
-                    return null;
-                }
-            }
-        }
-        System.out.println("Room number not found.");
-        return null;
-    }
-
-    // Rezervasyon iptali
-    public boolean cancelBooking(int bookingId) {
-        for (Booking booking : bookings) {
-            if (booking.getBookingId() == bookingId) {
-                bookings.remove(booking);
-                System.out.println("Booking canceled successfully!");
-                return true;
-            }
-        }
-        System.out.println("Booking ID not found.");
-        return false;
-    }
-
-    // Tüm rezervasyonları listeleme
     public void listBookings() {
         if (bookings.isEmpty()) {
             System.out.println("No bookings available.");
-            return;
+        } else {
+            bookings.forEach(System.out::println);
         }
-        for (Booking booking : bookings) {
-            System.out.println(booking);
-        }
+    }
+
+    private Room findRoomByNumber(int roomNumber) {
+        return rooms.stream()
+                .filter(room -> room.getRoomNumber() == roomNumber)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Booking findBookingById(int bookingId) {
+        return bookings.stream()
+                .filter(booking -> booking.getBookingId() == bookingId)
+                .findFirst()
+                .orElse(null);
     }
 }
